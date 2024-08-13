@@ -1,0 +1,701 @@
+#include<fstream.h>
+#include<conio.h>
+#include<stdio.h>
+#include<ctype.h>
+#include<string.h>
+#include"lib.h"
+#include<time.h>
+
+  int n=-1;
+  const int size=5;
+
+  void Searchflar()
+ {
+  master_file m1;
+  int f=0;
+  ifstream ifile("A.Dat",ios::binary);
+  if(!ifile)
+  {
+   cout<<"Error opening file";
+   getch();
+   return;
+      }
+    char ar[10];
+    cout<<"Enter the arrival location to searched : ";
+    gets(ar);
+
+ while(ifile.read((char*)&m1 ,sizeof(m1)))
+    {
+     if(strcmpi(ar,m1.retsflar())==0)
+		       {
+			 m1.display();
+			 cout<<endl;
+			 f=1;
+			 break;
+             		       }
+		     }
+   ifile.close();
+     if(f==0)
+	cout<<"Arrival location doesn't exist";
+	getch();
+  }
+
+  void Searchfldst()
+ {
+  master_file m1;
+  int f=0;
+  ifstream ifile("A.Dat",ios::binary);
+  if(!ifile)
+  {
+   cout<<"Error opening file";
+   getch();
+   return;
+  }
+    char des[10];
+       cout<<"Enter the flight destination location to be searched : ";
+    gets(des);
+   while(ifile.read((char*)&m1 ,sizeof(m1)))
+    {
+     if(strcmpi(des,m1.retsfldst())==0)
+		       {
+			 m1.display();
+			 cout<<endl;
+			f=1;
+			break;
+		                     }
+		     }
+   ifile.close();
+     if(f==0)
+	cout<<"Destiny location doesn't exist";
+	getch();
+  }
+
+ void Search()
+  {
+     int ch;
+     do
+      {
+       clrscr();
+       cout<<endl<<endl<<endl<<endl;
+       cout<<" ---------------  SEARCH FLIGHT  --------------- \n";
+       cout<<endl<<endl<<endl;
+       cout<<"              1. Arriving location \n";
+       cout<<"              2. Destiny location  \n";
+       cout<<"              3. Exit              \n"<<endl;
+       cout<<"                 Enter your choice    : ";
+       cin>>ch;
+      clrscr();
+     switch(ch)
+	{
+	 case 1:  Searchflar();
+		   break;
+	 case 2:  Searchfldst();
+		   break;
+	 case 3:  break;
+	 default: {
+		         cout<<"Invalid choice";
+		        getch();
+		        break;
+		               }
+	     }
+   }
+  while(ch!=3);
+ }
+
+
+ void Update()
+ {
+  fstream ofile("A.dat",ios::binary |ios::in|ios::out|ios::ate);
+  if(!ofile)
+  {
+   cout<<"Error opening file";
+   getch();
+   return;
+      }
+  char m[5],ans;
+  int f=0;
+  cout<<"Enter flight no to be updated = ";
+  gets(m);
+
+  ofile.seekg(0);
+  master_file ob;
+
+  while(ofile.read((char*)&ob ,sizeof(ob)))
+  {
+   if(strcmpi(m,ob.retsflno())==0)
+   {
+     ob.display();
+     cout<<endl;
+     cout<<"Confirm modification (Y/N) : ";
+     cin>>ans;
+     ans=toupper(ans);
+     if(ans=='Y')
+      {
+       clrscr();
+       cout<<endl;
+       ob.input();
+       cout<<endl;
+       cout<<"Confirm the same ";
+       cin>>ans;
+       ans=toupper(ans);
+
+	if(ans=='Y')
+	{
+	 int x=-1 * sizeof(ob);
+	 ofile.seekp(x,ios::cur);
+	 ofile.write((char*)&ob,sizeof(ob));
+	}
+       f=1;
+       break;
+        }
+    }
+  }
+  ofile.close();
+  if(f==0)
+      {
+       cout<<"Number doesn't exist";
+       getch();
+      }
+}
+
+void del()
+{
+ ifstream ifile("A.dat",ios::binary);
+ if(!ifile)
+ {
+   cout<<"Error copying file";
+   getch();
+   return;
+       }
+ ofstream ofile("Temp.dat",ios::binary);
+ if(!ofile)
+ {
+  cout<<"Error copying file";
+  getch();
+  return;
+  }
+ char fln[10];
+ cout<<"Enter the flight no. whose record is to be deleted : ";
+ gets(fln);
+
+ master_file m;
+ char ans;
+ while(ifile.read((char*)&m , sizeof(m)))
+ {
+   if(strcmpi(fln,m.retsflno())==0)
+   {
+     m.display();
+     cout<<endl;
+     cout<<"Confirm deletion (Y/N) : ";
+     cin>>ans;
+     ans=toupper(ans);
+     if(ans=='Y')
+     continue;
+      }
+   ofile.write((char*)&m , sizeof (m));
+  }
+   ifile.close();
+   ofile.close();
+   remove("A.dat");
+   rename("Temp.dat","A.dat");
+   getch();
+  }
+
+
+ void writedata()
+ {
+  master_file m1;
+  ofstream ofile("A.Dat",ios::binary|ios::out|ios::app);
+  if(!ofile)
+  {
+   cout<<"Error opening file";
+   getch();
+   return;
+  }
+  char ans;
+ do
+  {
+   cout<<endl;
+   m1.input();
+   cout<<endl;
+   ofile.write((char*)&m1 ,sizeof(m1));
+   cout<<"Continue (Y/N) : ";
+   cin>>ans;
+    ans=toupper(ans);
+   }
+    while(ans!='N');
+    ofile.close();
+  }
+
+void readdata()
+ {
+  master_file m1;
+  ifstream ifile("A.Dat",ios::binary,ios::in);
+  if(!ifile)
+  {
+   cout<<"Error opening file";
+   getch();
+   return;
+  }
+ char ans;
+   while(ifile.read((char*)&m1 ,sizeof(m1)))
+   {
+     m1.display();
+     cout<<endl;
+     getch();
+     }
+   ifile.close();
+  }
+
+  void fld()
+  {
+    int a;
+    do
+    {
+      clrscr();
+      cout<<endl<<endl<<endl;
+      cout<< " ---------------  FLIGHT RECORD  --------------- \n ";
+      cout<<endl<<endl<<endl<<endl;
+      cout<<"             1. Enter flight data        \n";
+      cout<<"             2. Display data             \n";
+      cout<<"             3. Search flight            \n";
+      cout<<"             4. Update any flight record \n";
+      cout<<"             5. Delete any flight record \n";
+      cout<<"             6. Exit                     \n"<<endl;
+      cout<<"                Enter your choice  :   ";
+      cin>>a;
+
+      clrscr();
+      switch(a)
+      {
+	case 1:   writedata();
+		     break;
+	case 2:   readdata();
+		     break;
+	case 3:   Search();
+		     break;
+	case 4:   Update();
+		     break;
+	case 5:   del();
+		     break;
+	case 6:   break;
+	default : cout<<"Wrong choice";
+		  getch();
+		  break;
+      	}
+       }   while(a!=6);
+    }
+
+
+  void cSearchcar()
+ {
+  customer_file m1;
+  int f=0;
+  ifstream ifile("C.Dat",ios::binary);
+
+  if(!ifile)
+  {
+   cout<<"Error opening file";
+   getch();return;
+  }
+   char a[10];
+    cout<<"Enter the arriving location to searched : ";
+    gets(a);
+   while(ifile.read((char*)&m1 ,sizeof(m1)))
+    {
+     if(strcmpi(a,m1.retscar())==0)
+		       {
+			 m1.Display();
+			 cout<<endl;
+			f=1;
+			break;
+       		       }
+		     }
+   ifile.close();
+     if(f==0)
+	cout<<"Arriving location doesn't exist";
+	getch();
+  }
+
+
+  void cSearchcdst()
+ {
+  customer_file m1;
+  int f=0;
+  ifstream ifile("C.Dat",ios::binary);
+  if(!ifile)
+  {
+   cout<<"Error opening file";
+   getch();return;
+  }
+    char de[10];
+    cout<<"Enter the customer destination location to searched : ";
+    gets(de);
+   while(ifile.read((char*)&m1 ,sizeof(m1)))
+    {
+     if(strcmpi(de,m1.retscdst())==0)
+		       {
+			 m1.Display();
+			 cout<<endl;
+			f=1;
+			break;
+       		       }
+		     }
+   ifile.close();
+     if(f==0)
+	cout<<"Destiny location doesn't exist";
+	getch();
+  }
+
+
+ void cSearch()
+  {
+    int ch;
+     do
+      {
+       clrscr();
+       cout<<endl<<endl<<endl;
+       cout<<" ---------------  SEARCH FLIGHT  --------------- \n";
+       cout<<endl<<endl<<endl<<endl;
+       cout<<"             1. Arriving location \n";
+       cout<<"             2. Destiny location  \n";
+       cout<<"             3. Exit              \n"<<endl;
+       cout<<"                Enter your choice : ";
+       cin>>ch;
+
+       clrscr();
+       switch(ch)
+	{
+	 case 1:  cSearchcar();
+		   break;
+	 case 2:  cSearchcdst();
+		   break;
+	 case 3:  break;
+	 default: {
+		   cout<<"Invalid choice";
+		   getch();
+		   break;
+		  }
+	}
+   }
+  while(ch!=3);
+ }
+
+
+
+  void update()
+ {
+  fstream ofile("C.dat",ios::binary |ios::in|ios::out|ios::ate);
+
+  if(!ofile)
+  {
+   cout<<"Error opening file";
+   getch();return;
+  }
+  char c[5],ans;
+  int f=0;
+  cout<<"Enter customer ID to be searched= ";
+  gets(c);
+  ofile.seekg(0);
+  customer_file C;
+  while(ofile.read((char*)&C ,sizeof(C)))
+  {
+   if(strcmpi(c,C.retscid())==0)
+   {
+     C.Display();
+     cout<<endl;
+     cout<<"Confirm modification (Y/N) : ";
+     cin>>ans;
+     ans=toupper(ans);
+     if(ans=='Y')
+      {
+       cout<<endl;
+       C.Input();
+       cout<<endl;
+       cout<<"Confirm the same (Y/N) : ";
+       cin>>ans;
+       ans=toupper(ans);
+
+	if(ans=='Y')
+	{
+	 int x=-1 * sizeof(C);
+	 ofile.seekp(x,ios::cur);
+	 ofile.write((char*)&C,sizeof(C));
+      	}
+       f=1;
+       break;
+     }
+   }
+  }
+ ofile.close();
+  if(f==0)
+      {
+       cout<<" Number doesn't exist";
+       getch();
+       }
+
+void cdel()
+{
+ ifstream ifile("C.dat",ios::binary|ios::in);
+ if(!ifile)
+ {
+   cout<<"Error copying file";
+   getch();
+   return;
+   }
+ ofstream ofile("Temp.dat",ios::binary);
+ if(!ofile)
+ {
+  cout<<"Error copying file";
+  getch();
+  return;
+  }
+ char ci[10];
+ cout<<"Enter the customer ID whose record is to be deleted : ";
+ gets(ci);
+ customer_file M;
+ char ans;
+ while(ifile.read((char*)&M , sizeof(M)))
+ {
+   if(strcmpi(ci,M.retscid())==0)
+   {
+     M.Display();
+     cout<<endl;
+     cout<<"Confirm deletion (Y/N) : ";
+     cin>>ans;
+     ans=toupper(ans);
+     cout<<endl;
+     if(ans== 'Y')
+     continue;
+     }
+   ofile.write((char*)&M , sizeof (M));
+  }
+   ifile.close();
+   ofile.close();
+   remove("C.dat");
+   rename("Temp.dat","C.dat");
+
+ }
+
+
+ void cwritedata()
+ {
+  customer_file m1;
+  ofstream ofile("C.Dat",ios::binary|ios::out|ios::app);
+  if(!ofile)
+  {
+   cout<<"Error opening file";
+   getch();
+   return;
+  }
+ char ans;
+ do
+  {
+   m1.Input();
+   cout<<endl;
+   ofile.write((char*)&m1 ,sizeof(m1));
+   cout<<"Continue (Y/N) : ";
+   cin>>ans;
+    ans=toupper(ans);
+   }
+    while(ans!='N');
+    ofile.close();
+  }
+
+
+ void creaddata()
+ {
+  customer_file m1;
+  ifstream ifile("C.Dat",ios::binary,ios::in);
+  if(!ifile)
+  {
+   cout<<" Error opening file ";
+   getch();
+   return;
+  }
+ char ans;
+
+   while(ifile.read((char*)&m1 ,sizeof(m1)))
+   {
+     m1.Display();
+     cout<<endl;
+     getch();
+      }
+   ifile.close();
+  }
+
+
+  void csd()
+  {
+    int a;
+    do
+    {
+      clrscr();
+      cout<<endl<<endl<<endl;
+      cout<<" ---------------  CUSTOMER  RECORD  --------------- \n ";
+      cout<<endl<<endl<<endl<<endl;
+      cout<<"             1. Enter customer data        \n";
+      cout<<"             2. Display data               \n";
+      cout<<"             3. Search flight              \n";
+      cout<<"             4. Update any customer record \n";
+      cout<<"             5. Delete any customer record \n";
+      cout<<"             6. Exit                       \n"<<endl;
+      cout<<"                Enter your choice : "            ;
+      cin>>a;
+      clrscr();
+      switch(a)
+      {
+	 case 1:   cwritedata();
+		     break;
+	 case 2:   creaddata();
+		     break;
+	 case 3:   cSearch();
+		     break;
+	 case 4:   update();
+		     break;
+	 case 5:   cdel();
+		     break;
+	 case 6:   break;
+	default :  cout<<"Wrong choice";
+		    getch();
+		    break;
+        	}
+       }
+       while(a!=6);
+    }
+
+void treaddata()
+ {
+  transaction_file t1;
+  ifstream ifile("Booking.Dat",ios::binary,ios::in);
+  if(!ifile)
+  {
+   cout<<"Error opening file";
+   getch();
+   return;
+  }
+ char Ans;
+
+   while(ifile.read((char*)&t1 ,sizeof(t1)))
+   {
+     t1.display();
+     cout<<endl;
+     getch();
+   }
+   ifile.close();
+  }
+
+ void twritedata(int b)
+ {
+  transaction_file t1;
+  ofstream ofile("Booking.Dat",ios::binary|ios::out|ios::app);
+  if(!ofile)
+  {
+   cout<<"Error opening file";
+   getch();
+   return;
+  }
+ char ans;
+ do
+  {
+   t1.input(b);
+   cout<<endl;
+   ofile.write((char*)&t1 ,sizeof(t1));
+   cout<<"Continue Y/N : ";
+   cin>>ans;
+    ans=toupper(ans);
+    if(ans=='Y')
+    {
+      b=b+1;
+          }
+   }
+    while(ans!='N');
+    ofile.close();
+  }
+
+
+    void book()
+  {
+    transaction_file ob;
+    int bno=0;
+   ifstream ifile("Booking.Dat",ios::binary,ios::in);
+   if(!ifile)
+   {
+     bno=1;
+     }
+   else
+   {
+    int x = -sizeof(ob);
+    ifile.seekg(x,ios::end);
+    ifile.read((char*) & ob, sizeof(ob));
+    bno = ob.retsbkno()+1;
+      }
+    ifile.close();
+    twritedata(bno);
+  }
+
+  void tr()
+  {
+    int a;
+    do
+    {
+      clrscr();
+      cout<<endl<<endl<<endl;
+   cout<<" ---------------  TRANSACTION  RECORD  --------------- \n   ";
+      cout<<endl<<endl<<endl<<endl;
+      cout<<"             1. Input data     \n";
+      cout<<"             2. Display data   \n";
+      cout<<"             3. Exit           \n"<<endl;
+      cout<<"                Enter your choice : ";
+      cin>>a;
+      clrscr();
+       switch(a)
+      {
+	 case 1:   book();
+		     break;
+	 case 2:   treaddata();
+		     break;
+	 case 3:   break;
+	default : cout<<"Wrong choice";
+		  break;
+       	}
+        } while(a!=3);
+    }
+
+
+ void main()
+ { 
+    textcolor(7);
+    master_file mo[size];
+    customer_file co[size];
+    transaction_file to[size];
+    int ch;
+    do
+      {
+	clrscr();
+	cout<<endl<<endl<<endl;
+	cout<<" ---------------  MAIN MENU  -------------- ";
+	cout<<endl<<endl<<endl<<endl;
+	cout<<"             1. Flight Record                 \n";
+	cout<<"             2. Customer Record               \n";
+	cout<<"             3. Generate Flight Ticket        \n";
+	cout<<"             4. Exit   "                   <<endl;
+	cout<<"                Enter your choice : ";
+	cin>>ch;
+	clrscr();
+	switch(ch)
+	{
+	   case 1:   fld();
+		     break;
+	   case 2:   csd();
+		     break;
+	   case 3:   tr();
+		     break;
+	   case 4:   break;
+	   default:  cout<<"invalid choice";
+		    getch();
+		    break;
+       }
+    }
+   while(ch!=4);
+}
